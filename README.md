@@ -1,10 +1,13 @@
 # Train-Map
 
-Live Irish Rail times, built with Next.js. Pick a station and see its upcoming
-departures and expected times, fetched from Irish Rail's free real-time API.
+Live Irish Rail times and a map of the rail network, built with Next.js. Pick a
+station to see its upcoming departures and expected times, or open the map to
+see the network geographically.
 
-Based on the official [Irish Rail realtime API](https://api.irishrail.ie/realtime/)
-(no key required).
+Data comes from the official
+[Irish Rail realtime API](https://api.irishrail.ie/realtime/) (no key
+required). The map uses [Leaflet](https://leafletjs.com/) with OpenStreetMap
+tiles.
 
 ---
 
@@ -15,7 +18,8 @@ Based on the official [Irish Rail realtime API](https://api.irishrail.ie/realtim
 - **npm** (ships with Node) — check with `npm -v`
 
 You do **not** need to install Next.js or React globally; `npm install` handles
-both.
+both — including `leaflet` and `react-leaflet`, which are already listed in
+`package.json`.
 
 ---
 
@@ -38,10 +42,15 @@ The dev server must stay running while you use the app. Stop it with `Ctrl-C`.
 
 ## What you'll see
 
-- A station dropdown, filled with every Irish Rail station.
-- Pick a station to load its live trains: destination and expected departure.
-- The station list is fetched once on load; times are fetched each time you
-  change station.
+- **`/`** — a station dropdown, filled with every Irish Rail station. Pick one
+  to load its live trains: destination and expected departure. The station list
+  is fetched once on load; times are fetched each time you change station.
+- **`/map`** — a Leaflet map (OpenStreetMap tiles) centred on Ireland. Click a
+  marker to see the station name.
+
+> The map currently plots a **small hardcoded set** of stations (Connolly and
+> Heuston). Wiring it to the full station list is the next step — see
+> [Project structure](#project-structure).
 
 ---
 
@@ -84,6 +93,25 @@ terminal for an error, and confirm your machine can reach
 `Expdepart` (not `Exdepart`). The parser fails silently on a wrong field name,
 so this is always worth checking first.
 
+**`/map` shows a grey or blank box** — a Leaflet container with no height. The
+map must have an explicit height (this app uses `height: 400px`). Leaflet
+cannot measure a container whose height is `0` or `auto`.
+
+**Map markers are missing or look broken** — Leaflet's default marker icon is
+loaded from a CSS-relative path that breaks under a bundler. Fix it by passing
+an explicit `icon` to `<Marker>`, or by copying `leaflet/dist/images/` into
+`public/` and setting `L.Icon.Default.mergeOptions` at import time.
+
+**`Module not found: Can't resolve '@/...'`** — the `@/` alias points at the
+**project root**, so `@/components/x` means `Train-map/components/x`, *not*
+`Train-map/app/components/x`. The alias is configured in `jsconfig.json` and is
+read at server startup, so restart `npm run dev` after changing it.
+
+**`window is not defined`** — a browser-only library (Leaflet) is being
+rendered on the server. It must be loaded with `next/dynamic` and
+`ssr: false`, which is what `app/components/map.jsx` does. Don't import
+`react-leaflet` directly from a server component.
+
 ---
 
 ## Project structure
@@ -92,20 +120,40 @@ so this is always worth checking first.
 Train-map/
 ├── app/
 │   ├── layout.js                # page shell + metadata
-│   ├── page.js                  # main page: station picker + live times
+│   ├── page.js                  # "/" — station picker + live times
+│   ├── map/
+│   │   └── page.js              # "/map" — passes station data to the map
 │   ├── components/
-│   │   └── train-list.jsx       # renders the list of departures
+│   │   ├── train-list.jsx       # renders the list of departures
+│   │   ├── map.jsx              # dynamic wrapper (ssr: false) for Leaflet
+│   │   └── leaflet-map.jsx      # the actual Leaflet map + markers
 │   └── api/
 │       ├── stations/route.js    # GET station list (proxy)
 │       ├── trains/route.js      # GET live times for a station (XML proxy)
 │       ├── trains/json/route.js # GET live times for a station (JSON)
 │       └── trains/now/route.js  # GET the server's current time
+├── jsconfig.json                # "@/" import alias → project root
 ├── package.json
 └── .gitignore
 ```
 
 Every folder under `app/api/` with a `route.js` becomes a public URL — that's
-why they all live there.
+why they all live there. Folders without a `page.js` or `route.js` (like
+`app/components/`) create no URL.
+
+**Why the map is split into two files:** Leaflet touches `window`, which
+doesn't exist on the server, so importing it directly crashes the server
+render with `window is not defined`. `map.jsx` uses
+`next/dynamic(() => import("./leaflet-map"), { ssr: false })` so the real map
+only loads in the browser, while `app/map/page.js` can still be a normal
+server component.
+
+**Next step (in progress):** `app/map/page.js` currently passes a hardcoded
+`markers` array. The plan is to move the station-fetching and XML-parsing into
+`lib/irishrail.js` as `getStations()`, so both the times page and the map page
+share one implementation instead of two copies. Note that Irish Rail returns
+latitude/longitude as **strings**, so they need `Number(...)` before Leaflet
+will accept them.
 
 ---
 

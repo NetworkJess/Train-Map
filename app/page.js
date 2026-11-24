@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import TrainList from "./components/train-list";
+import TrainList from "@/app/components/train-list";
 
 export default function Page() {
   // state: "the current station", starts empty until user picks one.
