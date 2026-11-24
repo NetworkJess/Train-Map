@@ -46,11 +46,8 @@ The dev server must stay running while you use the app. Stop it with `Ctrl-C`.
   to load its live trains: destination and expected departure. The station list
   is fetched once on load; times are fetched each time you change station.
 - **`/map`** — a Leaflet map (OpenStreetMap tiles) centred on Ireland. Click a
-  marker to see the station name.
-
-> The map currently plots a **small hardcoded set** of stations (Connolly and
-> Heuston). Wiring it to the full station list is the next step — see
-> [Project structure](#project-structure).
+  marker to see the station name. The map plots a small set of sample stations
+  (Connolly and Heuston).
 
 ---
 
@@ -73,9 +70,9 @@ The dev server must stay running while you use the app. Stop it with `Ctrl-C`.
 `package-lock.json`, then `npm install` again.
 
 **`npm install` prints "vulnerabilities"** — those come from Next.js 14's own
-dependencies. It's a warning, not a failure: the app still runs. Don't run
-`npm audit fix --force` casually (it can jump Next.js major versions and break
-the app) — just note it in the report as a known limitation.
+dependencies. It's a warning, not a failure: the app still runs. Avoid
+`npm audit fix --force`, which can jump Next.js major versions and break the
+app.
 
 **Pages error after being fine a minute ago** — a stale build cache. Stop the
 server, then:
@@ -147,13 +144,6 @@ render with `window is not defined`. `map.jsx` uses
 `next/dynamic(() => import("./leaflet-map"), { ssr: false })` so the real map
 only loads in the browser, while `app/map/page.js` can still be a normal
 server component.
-
-**Next step (in progress):** `app/map/page.js` currently passes a hardcoded
-`markers` array. The plan is to move the station-fetching and XML-parsing into
-`lib/irishrail.js` as `getStations()`, so both the times page and the map page
-share one implementation instead of two copies. Note that Irish Rail returns
-latitude/longitude as **strings**, so they need `Number(...)` before Leaflet
-will accept them.
 
 ---
 
