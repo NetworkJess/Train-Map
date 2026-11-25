@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import TrainList from "@/app/components/train-list";
+import Map from "@/app/components/map";
 
 export default function Page() {
   // state: "the current station", starts empty until user picks one.
@@ -30,31 +31,56 @@ export default function Page() {
   }, [station]);
 
   return (
-    <main style={{ fontFamily: "monospace", padding: 20, lineHeight: 1.6 }}>
-      <h1>Irish Rail · live times</h1>
+      <>
+    <h1 style={{textAlign:"center", fontFamily: "monospace"}}>Irish Rail · live times</h1>
+    
+    <main style={{ 
+      fontFamily: "monospace", 
+      padding: 20, 
+      lineHeight: 1.6, 
+      display: "grid",
+      gridTemplateColumns: "260px 1fr 300px",
+      gap: 12,
+      boxSizing: "border-box",
+      height: "calc(100vh - 60px)", }}>
 
-      {/* A select filled from the stations list */}
-      <label htmlFor="station">Station  </label>
-      <select
-        id="station"
-        value={station}
-        onChange={(e) => setStation(e.target.value)}
-      >
-        <option value="">— choose a station —</option>
-        {stations.map((s) => (
-          <option key={s.code} value={s.code}>
-            {s.name}
-          </option>
-        ))}
-      </select>
+      <section>
+        {/* A select filled from the stations list */}
+        <label htmlFor="station">Station  </label>
+        <select
+          id="station"
+          value={station}
+          onChange={(e) => setStation(e.target.value)}
+        >
+          <option value="">— choose a station —</option>
+          {stations.map((s) => (
+            <option key={s.code} value={s.code}>
+              {s.name}
+            </option>
+          ))}
+        </select>
+      </section>
 
-      {/* lists + props: paint the live times for the chosen station */}
-      {!station ? (
-          <p>Pick a station to see live times.</p>
-        ) : (
-          <TrainList trains={trains} loading={loading} />
-        )}
+      <section>
+        <Map center={[53.3498, -6.2603]} markers={[
+            { code: "CNLLY", name: "Connolly", lat: 53.3514, lon: -6.2489 },
+            { code: "HEUST", name: "Heuston", lat: 53.3465, lon: -6.2928 },
+          ]} />
+
+      </section>
+
+      <section>
+
+        {/* lists + props: paint the live times for the chosen station */}
+        {!station ? (
+            <p>Pick a station to see live times.</p>
+          ) : (
+            <TrainList trains={trains} loading={loading} />
+          )}
+
+      </section>
     </main>
+    </>
   );
 }
 
