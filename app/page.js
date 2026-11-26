@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import TrainList from "@/app/components/train-list";
 import Map from "@/app/components/map";
+import Table from "@/lib/supabase";
 
 export default function Page() {
   // state: "the current station", starts empty until user picks one.

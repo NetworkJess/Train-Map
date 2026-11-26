@@ -9,3 +9,8 @@
 .DS_Store
 npm-debug.log*
 *.pem
+
+# environment variables — never commit these
+.env
+.env.local
+.env*.local
