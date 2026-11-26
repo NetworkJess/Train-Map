@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import TrainList from "@/app/components/train-list";
 import Map from "@/app/components/map";
-import { onAuthChange, getFavourites } from "@/lib/supabase";
+import { onAuthChange, getFavourites, signOut} from "@/lib/supabase";
+import Link from "next/link";
 
 export default function Page() {
   // state: "the current station", starts empty until user picks one.
@@ -46,7 +47,7 @@ export default function Page() {
 
   return (
       <>
-    <h1 style={{textAlign:"center", fontFamily: "monospace"}}>Irish Rail · live times {user ? user.email : "not signed in"}</h1>
+    <h1 style={{textAlign:"center", fontFamily: "monospace"}}>Irish Rail · live times </h1>
     
     <main style={{ 
       fontFamily: "monospace", 
@@ -73,7 +74,17 @@ export default function Page() {
             </option>
           ))}
         </select>
-      </section>
+         {user ? (
+            <div style={{ marginTop: 12 }}>
+              <p style={{ margin: 0, fontSize: 16, fontWeight:"bold" }}>{user.email}</p>
+              <button onClick={signOut}>Sign out</button>
+            </div>
+          ) : (
+            <div style={{ marginTop: 12 }}>
+              <Link href="/login">Sign in</Link>
+            </div>
+          )}
+        </section>
 
       <section>
         <Map 
