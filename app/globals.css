@@ -1,0 +1,28 @@
+.rail-marker {
+  width: 8px;
+  height: 8px;
+  background: #58a6ff;          /* one accent, GitHub-dark blue */
+  border: 1px solid #0d1117;    /* dark ring separates dots from tiles */
+  border-radius: 50%;
+  box-shadow: 0 0 4px #58a6ff66; /* faint glow — the "cyber" hint, restrained */
+}
+.rail-marker:hover {
+  background: #e6edf3;
+  box-shadow: 0 0 8px #58a6ff;
+}
+
+/* Leaflet popups, matched to the theme */
+.leaflet-popup .leaflet-popup-content-wrapper,
+.leaflet-popup .leaflet-popup-tip {
+  background: #161b22;
+  color: #e6edf3;
+  font-family: monospace;
+  border: 1px solid #30363d;
+  border-radius: 2px;           /* square-ish, not round */
+}
+.leaflet-popup-content { 
+  margin: 8px 12px; 
+}
+.leaflet-container a.leaflet-popup-close-button{
+  color: #8b949e;
+}

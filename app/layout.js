@@ -1,4 +1,5 @@
 // Required by Next.js: every app needs a root layout that wraps all pages.
+import "./globals.css";
 export const metadata = {
   title: "Irish Rail Live Times",
 };

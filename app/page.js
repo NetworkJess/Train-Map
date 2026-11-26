@@ -45,7 +45,7 @@ export default function Page() {
 
       <section>
         {/* A select filled from the stations list */}
-        <label htmlFor="station">Station  </label>
+        <label htmlFor="station">  Station  </label>
         <select
           id="station"
           value={station}
@@ -84,25 +84,7 @@ export default function Page() {
 
 // Very small XML parser helpers (Irish Rail returns XML, not JSON).
 
-function tag(xml, name) {
-  const m = xml.match(new RegExp(`<${name}>([^<]*)</${name}>`));
-  return m ? stripWeird(m[1]) : "";
-}
-function stripWeird(s) {
-  return s.replace(/\n/g, "").trim();
-}
 
-function parseStations(xml) {
-  // Every station appears once per <objStation> block.
-  const blocks = xml.split("<objStation>").slice(1);
-  return blocks
-    .map((b) => ({
-      code: tag(b, "StationCode"),
-      name: tag(b, "StationDesc"),
-    }))
-    .filter((s) => s.code && s.name)
-    .sort((a, b) => a.name.localeCompare(b.name));
-}
 
 function parseTrains(xml) {
   const blocks = xml.split("<objStationData>").slice(1);

@@ -2,6 +2,13 @@
 
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+
+const dot = L.divIcon({
+  className: "rail-marker",
+  iconSize: [8, 8],
+  iconAnchor: [4, 4],   // centre the dot on the coordinate
+});
 
 export default function LeafletMap({ center, markers }) {
   return (
@@ -16,7 +23,7 @@ export default function LeafletMap({ center, markers }) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       {markers.map((m) => (
-        <Marker key={m.code} position={[m.lat, m.lon]}>
+        <Marker icon={dot} key={m.code} position={[m.lat, m.lon]}>
           <Popup>{m.name}</Popup>
         </Marker>
       ))}
