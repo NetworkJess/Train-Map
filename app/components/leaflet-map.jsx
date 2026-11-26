@@ -10,7 +10,7 @@ const dot = L.divIcon({
   iconAnchor: [4, 4],   // centre the dot on the coordinate
 });
 
-export default function LeafletMap({ center, markers }) {
+export default function LeafletMap({ center, markers, onSelect }) {
   return (
     <MapContainer
       center={center}
@@ -23,7 +23,7 @@ export default function LeafletMap({ center, markers }) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       {markers.map((m) => (
-        <Marker icon={dot} key={m.code} position={[m.lat, m.lon]}>
+        <Marker icon={dot} key={m.code} position={[m.lat, m.lon]} eventHandlers={{ click: () => onSelect(m.code) }}>
           <Popup>{m.name}</Popup>
         </Marker>
       ))}

@@ -63,7 +63,8 @@ export default function Page() {
       <section>
         <Map 
               center={[53.3498, -6.2603]} 
-              markers={stations} />
+              markers={stations}
+              onSelect={setStation} />
 
       </section>
 
