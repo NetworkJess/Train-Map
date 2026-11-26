@@ -9,7 +9,7 @@ export default function LeafletMap({ center, markers }) {
       center={center}
       zoom={8}
       scrollWheelZoom={false}
-      style={{ height: "400px", width: "100%" }}
+      style={{ height: "100%", width: "100%" }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

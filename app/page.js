@@ -15,9 +15,8 @@ export default function Page() {
   // On first load, fetch the station list once.
   useEffect(() => {
     fetch("/api/stations")
-      .then((r) => r.text())
-      .then(parseStations)
-      .then(setStations);
+      .then((r) => r.json())
+      .then((data) => setStations(data.stations));
   }, []);
 
   // When the chosen station changes, fetch its live trains.
@@ -62,10 +61,9 @@ export default function Page() {
       </section>
 
       <section>
-        <Map center={[53.3498, -6.2603]} markers={[
-            { code: "CNLLY", name: "Connolly", lat: 53.3514, lon: -6.2489 },
-            { code: "HEUST", name: "Heuston", lat: 53.3465, lon: -6.2928 },
-          ]} />
+        <Map 
+              center={[53.3498, -6.2603]} 
+              markers={stations} />
 
       </section>
 
