@@ -30,3 +30,21 @@ export async function POST(request) {
   if (error) return Response.json({ error: error.message }, { status: 400 });
   return Response.json({ favourite: data[0] }, { status: 201 });
 }
+
+export async function DELETE(request) {
+  const auth = request.headers.get("authorization");
+  if (!auth) return Response.json({ error: "not signed in" }, { status: 401 });
+
+  const id = new URL(request.url).searchParams.get("id");
+  if (!id) return Response.json({ error: "id required" }, { status: 400 });
+
+  const client = supabaseAsUser(auth.replace("Bearer ", ""));
+
+  const { error } = await client
+    .from("favourites")
+    .delete()
+    .eq("id", id);
+
+  if (error) return Response.json({ error: error.message }, { status: 400 });
+  return new Response(null, { status: 204 });
+}

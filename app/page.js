@@ -16,7 +16,7 @@ export default function Page() {
   const [favourites, setFavourites] = useState([]);
 
   const alreadyFaved = favourites.some((f) => f.station_code === station);
-  
+
   useEffect(() => {
     const unsub = onAuthChange((u) => {
       setUser(u);
@@ -35,6 +35,15 @@ export default function Page() {
     const json = await res.json();
     setFavourites(json.favourites);
   }
+
+  async function removeFavourite(id) {
+  const { data: { session } } = await supabase.auth.getSession();
+  await fetch(`/api/favourites?id=${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${session?.access_token}` },
+  });
+  await loadFavourites();
+}
 
   async function favouriteSelected() {
     const s = stations.find((x) => x.code === station);
@@ -133,6 +142,7 @@ export default function Page() {
                 >
                   {f.station_name}
                 </button>
+                <button onClick={() => removeFavourite(f.id)} title="Remove">×</button>
               </li>
             ))}
           </ul>
