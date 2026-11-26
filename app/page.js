@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import TrainList from "@/app/components/train-list";
 import Map from "@/app/components/map";
-import Table from "@/lib/supabase";
+import { onAuthChange, getFavourites } from "@/lib/supabase";
 
 export default function Page() {
   // state: "the current station", starts empty until user picks one.
@@ -11,7 +11,21 @@ export default function Page() {
   const [stations, setStations] = useState([]);
   const [trains, setTrains] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [favourites, setFavourites] = useState([]);
 
+  useEffect(() => {
+  const unsub = onAuthChange(async (u) => {
+    setUser(u);
+    if (u) {
+      const rows = await getFavourites(u.id);
+      setFavourites(rows);
+    } else {
+      setFavourites([]);
+    }
+  });
+  return () => unsub.data.subscription.unsubscribe();
+}, []);
 
   // On first load, fetch the station list once.
   useEffect(() => {
@@ -32,7 +46,7 @@ export default function Page() {
 
   return (
       <>
-    <h1 style={{textAlign:"center", fontFamily: "monospace"}}>Irish Rail · live times</h1>
+    <h1 style={{textAlign:"center", fontFamily: "monospace"}}>Irish Rail · live times {user ? user.email : "not signed in"}</h1>
     
     <main style={{ 
       fontFamily: "monospace", 
