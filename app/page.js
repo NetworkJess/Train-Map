@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import TrainList from "@/app/components/train-list";
 import Map from "@/app/components/map";
-import { onAuthChange, getFavourites, signOut} from "@/lib/supabase";
+import { supabase, onAuthChange, getFavourites, signOut} from "@/lib/supabase";
 import Link from "next/link";
 
 export default function Page() {
@@ -18,13 +18,21 @@ export default function Page() {
   useEffect(() => {
   const unsub = onAuthChange(async (u) => {
     setUser(u);
-    if (u) {
-      const rows = await getFavourites(u.id);
-      setFavourites(rows);
-    } else {
-      setFavourites([]);
-    }
-  });
+      if (!u) { setFavourites([]); return; }
+
+      try {
+        const rows = await getFavourites(u.id);
+        setFavourites(rows);
+
+        // test call to the route
+        const { data: { session } } = await supabase.auth.getSession();
+        const res = await fetch("/api/favourites", {
+          headers: { Authorization: `Bearer ${session?.access_token}` },
+        });
+      } catch (err) {
+        setFavourites([]);
+      }
+    });
   return () => unsub.data.subscription.unsubscribe();
 }, []);
 
